@@ -1,53 +1,85 @@
 package com.example.mynavi.apinavi.service;
 
 import com.example.mynavi.api.dto.DocumentDto;
+import com.example.mynavi.api.dto.KakaoApiResponseDto;
 import com.example.mynavi.api.service.KakaoAddressSearchService;
-import com.example.mynavi.api.service.KakaoUriBuilderService;
 import com.example.mynavi.apinavi.dto.KakaoRouteAllResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.*;
 
-@Slf4j
+@Slf4j(topic = "KakaoRouteSearchService")
 @Service
 @RequiredArgsConstructor
 public class KakaoRouteSearchService {
 
     private final RestTemplate restTemplate;
-    private final KakaoUriBuilderService kakaoUriBuilderService;
     private final KakaoAddressSearchService kakaoAddressSearchService;
+    private final KakaoCategorySearchService kakaoCategorySearchService;
 
     @Value("${kakao.rest.api.key}")
     private String kakaoRestApiKey;
 
 
-    public KakaoRouteAllResponseDto requestRouteSearch(String originAddress, String destinationAddress) {
-        if (ObjectUtils.isEmpty(originAddress) || ObjectUtils.isEmpty(destinationAddress)) return null;
+    public KakaoRouteAllResponseDto requestRouteSearch(String originAddress,Integer redius) {
+
+
+       if (ObjectUtils.isEmpty(originAddress) || ObjectUtils.isEmpty(redius)) return null;
 
         // 출발지와 도착지 주소를 각각 좌표로 변환
         DocumentDto origin = kakaoAddressSearchService.requestAddressSearch(originAddress).getDocumentDtoList().get(0);
-        DocumentDto destination = kakaoAddressSearchService.requestAddressSearch(destinationAddress).getDocumentDtoList().get(0);
 
-        // "위도,경도" 형식의 문자열 생성
-        String originCoord = origin.getLongitude() + "," + origin.getLatitude();
-        String destinationCoord = destination.getLongitude() + "," + destination.getLatitude();
+        /***
+         * 목적지와 경유지 값을 반경으로 계산해서 가져오는 메소드
+         ***/
+        KakaoApiResponseDto responses = kakaoCategorySearchService.requestPharmacyCategorySearch(origin.getY(), origin.getX(), redius);
 
-        URI uri = kakaoUriBuilderService.buildUriByRouteSearch(originCoord, destinationCoord);
+        /***
+         랜덤으로 다중 목적지와 경유지 만들기 알고리즘
+         ***/
+        int RandomLength = responses.getDocumentDtoList().size();
+
+        Random rd = new Random();
+
+        int destinationCnt = rd.nextInt(RandomLength);
+        int waypointsCnt = rd.nextInt(RandomLength);
+
+        if(destinationCnt == waypointsCnt){
+            waypointsCnt = destinationCnt - 1;
+        }
+
+        DocumentDto destination = responses.getDocumentDtoList().get(destinationCnt);
+        DocumentDto waypoints = responses.getDocumentDtoList().get(waypointsCnt);
+
+        /***
+         * 요청 헤더 만드는 공식
+         ***/
+
+        Map<String,Object> uriData = new TreeMap<>();
+        uriData.put("origin",new DocumentDto(origin.getName(),origin.getY(), origin.getX()));
+        uriData.put("destination",new DocumentDto(destination.getName(),destination.getY(),destination.getX()));
+
+        uriData.put("waypoints",new ArrayList<>(Arrays.asList(
+                new DocumentDto(waypoints.getName(), waypoints.getY(), waypoints.getX())
+        )));
+        uriData.put("priority","RECOMMEND");
+
+        URI uri = URI.create("https://apis-navi.kakaomobility.com/v1/waypoints/directions");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity httpEntity = new HttpEntity(headers);
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity <Map<String,Object>> httpEntity = new HttpEntity<>(uriData,headers);
 
-        return restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoRouteAllResponseDto.class).getBody();
+        return restTemplate.postForEntity(uri,httpEntity,KakaoRouteAllResponseDto.class).getBody();
     }
 }

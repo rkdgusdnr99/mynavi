@@ -12,18 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DocumentDto {
 
-//    @JsonProperty("place_name") // 카테고리
-//    private String placeName;
-//
-//    @JsonProperty("distance") // 카테고리
-//    private double distance;
-
     @JsonProperty("address_name")
-    private String addressName;
+    private String name;
 
     @JsonProperty("y") // y좌표값
-    private double latitude;
+    private double y;
 
     @JsonProperty("x") // x좌표값
-    private double longitude;
+    private double x;
 }

@@ -1,6 +1,7 @@
-package com.example.mynavi.api.service;
+package com.example.mynavi.apinavi.service;
 
 import com.example.mynavi.api.dto.KakaoApiResponseDto;
+import com.example.mynavi.api.service.KakaoUriBuilderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,16 +22,16 @@ public class KakaoCategorySearchService { // 특정 카테고리 -> 약국
 
     private final RestTemplate restTemplate;
 
-    private static final String PHARMACY_CATEGORY = "AT4";
+    private static final String PARK_CATEGORY = "AT4";
 
     @Value("${kakao.rest.api.key}")
     private String kakaoRestApiKey;
 
 
     // KakaoAddressSearch -> 주소 -> 위도,경도 -> 값을 매핑
-    public KakaoApiResponseDto requestPharmacyCategorySearch(double latitude, double longitude, double radius){
+    public KakaoApiResponseDto requestPharmacyCategorySearch(double y, double x, double radius){
 
-        URI uri = kakaoUriBuilderService.buildUriByCategorySearch(latitude, longitude, radius, PHARMACY_CATEGORY);
+        URI uri = kakaoUriBuilderService.buildUriByCategorySearch(y, x, radius, PARK_CATEGORY);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);

@@ -3,6 +3,7 @@ package com.example.mynavi.apinavi.controller;
 import com.example.mynavi.apinavi.dto.KakaoRouteAllResponseDto;
 import com.example.mynavi.apinavi.service.KakaoRouteSearchService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j(topic = "RouteController")
 public class RouteController {
 
     private final KakaoRouteSearchService kakaoRouteSearchService;
@@ -27,8 +29,8 @@ public class RouteController {
     }
 
     @GetMapping("/route")
-    public ResponseEntity<KakaoRouteAllResponseDto> getRoute(@RequestParam String originAddress, @RequestParam String destinationAddress) {
-        KakaoRouteAllResponseDto response = kakaoRouteSearchService.requestRouteSearch(originAddress, destinationAddress);
+    public ResponseEntity<KakaoRouteAllResponseDto> getRoute(@RequestParam String originAddress, @RequestParam Integer redius) {
+        KakaoRouteAllResponseDto response = kakaoRouteSearchService.requestRouteSearch(originAddress,redius);
         if (response == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 적절한 HTTP 상태 코드로 응답
         }

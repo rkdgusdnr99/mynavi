@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
-@Slf4j
+@Slf4j(topic = "KakaoAddressSearchService")
 @Service
 @RequiredArgsConstructor
 public class KakaoAddressSearchService {
