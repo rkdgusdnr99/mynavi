@@ -1,6 +1,6 @@
-package com.example.mynavi.direction.repository;
+package com.example.mynavi.randomNavi.direction.repository;
 
-import com.example.mynavi.direction.entity.Direction;
+import com.example.mynavi.randomNavi.direction.entity.Direction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

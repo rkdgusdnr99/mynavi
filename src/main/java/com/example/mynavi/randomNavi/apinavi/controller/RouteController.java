@@ -1,7 +1,7 @@
-package com.example.mynavi.apinavi.controller;
+package com.example.mynavi.randomNavi.apinavi.controller;
 
-import com.example.mynavi.apinavi.dto.KakaoRouteAllResponseDto;
-import com.example.mynavi.apinavi.service.KakaoRouteSearchService;
+import com.example.mynavi.randomNavi.apinavi.dto.KakaoRouteAllResponseDto;
+import com.example.mynavi.randomNavi.apinavi.service.KakaoRouteSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,9 +28,18 @@ public class RouteController {
         return "index";
     }
 
-    @GetMapping("/route")
-    public ResponseEntity<KakaoRouteAllResponseDto> getRoute(@RequestParam String originAddress, @RequestParam Integer redius) {
-        KakaoRouteAllResponseDto response = kakaoRouteSearchService.requestRouteSearch(originAddress,redius);
+    @GetMapping("/all-random-route")
+    public ResponseEntity<KakaoRouteAllResponseDto> getRandomWays(@RequestParam String originAddress, @RequestParam Integer redius) {
+        KakaoRouteAllResponseDto response = kakaoRouteSearchService.requestRandomWays(originAddress,redius);
+        if (response == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 적절한 HTTP 상태 코드로 응답
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/random-route")
+    public ResponseEntity<KakaoRouteAllResponseDto> getRandomWay(@RequestParam String originAddress,@RequestParam String destinationAddress, @RequestParam Integer redius) {
+        KakaoRouteAllResponseDto response = kakaoRouteSearchService.requestRamdomWay(originAddress,destinationAddress,redius);
         if (response == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 적절한 HTTP 상태 코드로 응답
         }

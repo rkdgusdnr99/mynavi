@@ -1,6 +1,6 @@
-package com.example.mynavi.api.service;
+package com.example.mynavi.randomNavi.api.service;
 
-import com.example.mynavi.api.dto.KakaoApiResponseDto;
+import com.example.mynavi.randomNavi.api.dto.KakaoApiResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

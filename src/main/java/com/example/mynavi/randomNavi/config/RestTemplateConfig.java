@@ -1,4 +1,4 @@
-package com.example.mynavi.config;
+package com.example.mynavi.randomNavi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

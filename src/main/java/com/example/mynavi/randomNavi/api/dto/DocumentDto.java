@@ -1,4 +1,4 @@
-package com.example.mynavi.api.dto;
+package com.example.mynavi.randomNavi.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
