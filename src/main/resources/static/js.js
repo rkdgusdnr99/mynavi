@@ -8,22 +8,15 @@ document.getElementById('search-origin').addEventListener('click', function() {
 });
 
 // 도착지 주소 검색 버튼----------------------------------------------------------------------------------------------------//
-document.getElementById('search-destination').addEventListener('click', function() {
-    new daum.Postcode({
-        oncomplete: function(data) {
-            document.getElementById('destinationAddress').value = data.address;
-        }
-    }).open();
-});
 
 // 사용자가 길 찾기 버튼을 눌렀을 때의 동작----------------------------------------------------------------------------------------------------//
 document.getElementById('search-form').addEventListener('submit', function(e) {
     e.preventDefault(); // 기본 submit 동작을 막습니다.
 
     var originAddress = document.getElementById('originAddress').value;
-    var destinationAddress = document.getElementById('destinationAddress').value;
+    var destinationAddress = document.getElementById('redius').value;
 
-    fetch('/route?originAddress=' + originAddress  + '&destinationAddress=' + destinationAddress)
+    fetch('/route?originAddress=' + originAddress  + '&redius=' + destinationAddress)
         .then(response => response.json())
         .then(data => {
             // data는 KakaoRouteAllResponseDto 객체
